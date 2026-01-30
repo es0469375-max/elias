@@ -35,8 +35,22 @@
             transform: scale(0.98);
         }
 
-        #cart-modal {
-            transition: bottom 0.3s ease-in-out;
+        /* Menu Lateral Animation */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
+        }
+        #sidebar.open {
+            transform: translateX(0);
+        }
+        #sidebar-overlay {
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+            opacity: 0;
+        }
+        #sidebar-overlay.open {
+            pointer-events: auto;
+            opacity: 1;
         }
 
         /* Estilo para esconder scrollbar */
@@ -44,7 +58,42 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-24 overflow-x-hidden">
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" onclick="toggleMenu()" class="fixed inset-0 bg-black bg-opacity-50 z-[60]"></div>
+
+    <!-- Sidebar Menu -->
+    <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white z-[70] shadow-2xl p-6 flex flex-col">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="font-bold text-red-600 text-xl">Menu</h2>
+            <button onclick="toggleMenu()" class="text-gray-500 text-2xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        
+        <nav class="space-y-6">
+            <a href="#" onclick="toggleMenu()" class="flex items-center text-gray-700 font-medium text-lg">
+                <i class="fa-solid fa-house mr-4 text-red-600"></i> Início
+            </a>
+            <a href="#hamburgueres" onclick="toggleMenu(); scrollToCategory('hamburgueres')" class="flex items-center text-gray-700 font-medium text-lg">
+                <i class="fa-solid fa-burger mr-4 text-red-600"></i> Cardápio
+            </a>
+            <a href="https://wa.me/5574974008239" target="_blank" class="flex items-center text-gray-700 font-medium text-lg">
+                <i class="fa-solid fa-phone mr-4 text-red-600"></i> Contato
+            </a>
+            <div class="border-t pt-6 mt-6">
+                <p class="text-sm text-gray-400">Redes Sociais</p>
+                <div class="flex space-x-4 mt-4 text-2xl text-gray-600">
+                    <i class="fa-brands fa-instagram"></i>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="mt-auto">
+            <p class="text-xs text-gray-400">© 2024 Delícia de Bom</p>
+        </div>
+    </div>
 
     <!-- Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50 px-4 py-3 flex justify-between items-center">
@@ -54,7 +103,7 @@
                 <span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span> Aberto agora
             </p>
         </div>
-        <button class="text-gray-600 text-2xl">
+        <button onclick="toggleMenu()" class="text-gray-600 text-2xl">
             <i class="fa-solid fa-bars"></i>
         </button>
     </header>
@@ -207,7 +256,7 @@
                 id: 1,
                 category: 'hamburgueres',
                 name: 'Bacon franco bb',
-                desc: 'Hambúrguer de frango suculento, preparado com temperos especiais, pão brioche, alface, tomate e maionese artesanal.',
+                desc: 'Hambúrguer de frango suculento, preparado com temperos especiais, pão brioche, alface, tomate e mainese artesanal.',
                 price: 24.90,
                 image: 'https://www.receitasnestle.com.br/sites/default/files/styles/recipe_detail_desktop_new/public/srh_recipes/ad2f5bca67422df23f8e6916d6afc6a2.jpg?itok=3A6mvEQY',
                 adds: [{ name: 'Bacon', price: 4 }, { name: 'Ovo', price: 3 }, { name: 'Queijo extra', price: 3 }]
@@ -236,7 +285,7 @@
                 name: 'Burger Chicken Crispy',
                 desc: 'Filé de frango empanado crocante, pão brioche, alface, tomate e maionese especial.',
                 price: 26.90,
-                image: 'https://images.unsplash.com/photo-1615239060474-51759550b071?auto=format&fit=crop&w=400&q=80',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBffN5VOapKzJ88Y07pBTsWu29TQgcX83-sw&s',
                 adds: [{ name: 'Queijo', price: 3 }, { name: 'Bacon', price: 4 }]
             },
             {
@@ -298,6 +347,21 @@
             renderProducts();
             initSwiper();
         });
+
+        // Toggle Menu Lateral
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+            
+            // Impede scroll do body quando menu aberto
+            if(sidebar.classList.contains('open')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+        }
 
         function initSwiper() {
             new Swiper('.swiper-container', {
