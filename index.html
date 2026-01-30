@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delícia de Bom - Delivery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .swiper-container {
+            width: 100%;
+            height: 200px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .category-pill.active {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .product-card {
+            transition: transform 0.2s;
+        }
+
+        .product-card:active {
+            transform: scale(0.98);
+        }
+
+        #cart-modal {
+            transition: bottom 0.3s ease-in-out;
+        }
+
+        /* Estilo para esconder scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="pb-24">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 px-4 py-3 flex justify-between items-center">
+        <div>
+            <h1 class="text-xl font-bold text-red-600">DELÍCIA DE BOM</h1>
+            <p class="text-xs text-gray-500 flex items-center">
+                <span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span> Aberto agora
+            </p>
+        </div>
+        <button class="text-gray-600 text-2xl">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </header>
+
+    <main class="p-4 max-w-md mx-auto">
+        
+        <!-- Banner Carousel -->
+        <div class="swiper-container mb-6 shadow-lg">
+            <div class="swiper-wrapper">
+                <!-- BANNER 1 -->
+                <div class="swiper-slide bg-red-600 relative">
+                    <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover opacity-60" alt="Promoção">
+                    <div class="absolute inset-0 flex flex-col justify-center px-6 text-white">
+                        <h2 class="text-2xl font-bold">PROMOÇÃO DO DIA</h2>
+                        <p>Na compra de 2 Burgers, a batata é grátis!</p>
+                    </div>
+                </div>
+                <!-- BANNER 2 -->
+                <div class="swiper-slide bg-orange-500 relative">
+                    <img src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover opacity-60" alt="Novidade">
+                    <div class="absolute inset-0 flex flex-col justify-center px-6 text-white">
+                        <h2 class="text-2xl font-bold">NOVO BBQ BURGER</h2>
+                        <p>Experimente o sabor defumado original.</p>
+                    </div>
+                </div>
+                <!-- BANNER 3 -->
+                <div class="swiper-slide bg-black relative">
+                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover opacity-60" alt="Combo">
+                    <div class="absolute inset-0 flex flex-col justify-center px-6 text-white">
+                        <h2 class="text-2xl font-bold">DESCONTO 10%</h2>
+                        <p>Use o cupom: PRIMEIRAVZ no checkout.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+
+        <!-- Categorias -->
+        <div class="flex overflow-x-auto gap-2 no-scrollbar mb-6">
+            <button onclick="scrollToCategory('hamburgueres')" class="category-pill active whitespace-nowrap px-6 py-2 rounded-full bg-white border border-gray-200 font-semibold text-sm">Hambúrgueres</button>
+            <button onclick="scrollToCategory('combos')" class="category-pill whitespace-nowrap px-6 py-2 rounded-full bg-white border border-gray-200 font-semibold text-sm">Combos</button>
+            <button onclick="scrollToCategory('bebidas')" class="category-pill whitespace-nowrap px-6 py-2 rounded-full bg-white border border-gray-200 font-semibold text-sm">Bebidas</button>
+        </div>
+
+        <!-- Menu Section -->
+        <div id="menu-container">
+            <!-- Hamburgueres -->
+            <section id="hamburgueres" class="mb-8">
+                <h3 class="text-lg font-bold mb-4 flex items-center">
+                    <span class="mr-2">🍔</span> HAMBÚRGUERES
+                </h3>
+                <div class="space-y-4" id="list-hamburgueres"></div>
+            </section>
+
+            <!-- Combos -->
+            <section id="combos" class="mb-8">
+                <h3 class="text-lg font-bold mb-4 flex items-center">
+                    <span class="mr-2">🍟</span> COMBOS
+                </h3>
+                <div class="space-y-4" id="list-combos"></div>
+            </section>
+
+            <!-- Bebidas -->
+            <section id="bebidas" class="mb-8">
+                <h3 class="text-lg font-bold mb-4 flex items-center">
+                    <span class="mr-2">🥤</span> BEBIDAS
+                </h3>
+                <div class="space-y-4" id="list-bebidas"></div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Cart Bar -->
+    <div id="cart-bar" class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 flex justify-between items-center z-50 hidden">
+        <div class="flex flex-col">
+            <span class="text-xs text-gray-500" id="cart-count">0 itens</span>
+            <span class="font-bold text-lg text-red-600" id="cart-total">R$ 0,00</span>
+        </div>
+        <button onclick="toggleCartModal()" class="bg-red-600 text-white px-8 py-3 rounded-xl font-bold flex items-center shadow-lg">
+            Ver Carrinho <i class="fa-solid fa-chevron-right ml-2 text-xs"></i>
+        </button>
+    </div>
+
+    <!-- Modal de Item (Customização) -->
+    <div id="item-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div class="relative h-48">
+                <img id="modal-img" src="" class="w-full h-full object-cover">
+                <button onclick="closeItemModal()" class="absolute top-4 right-4 bg-black bg-opacity-50 text-white w-8 h-8 rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <h2 id="modal-title" class="text-2xl font-bold text-gray-800"></h2>
+                <p id="modal-desc" class="text-sm text-gray-500 mt-1 mb-4"></p>
+                
+                <div id="additional-section">
+                    <h4 class="font-bold text-gray-700 mb-3 border-b pb-1">Turbine seu pedido</h4>
+                    <div id="modal-additionals" class="space-y-3">
+                        <!-- JS renders additionals here -->
+                    </div>
+                </div>
+
+                <div class="mt-6 flex items-center justify-between">
+                    <div class="flex items-center space-x-4 bg-gray-100 p-2 rounded-lg">
+                        <button onclick="updateQty(-1)" class="w-8 h-8 flex items-center justify-center text-red-600 font-bold">-</button>
+                        <span id="modal-qty" class="font-bold">1</span>
+                        <button onclick="updateQty(1)" class="w-8 h-8 flex items-center justify-center text-red-600 font-bold">+</button>
+                    </div>
+                    <button id="add-to-cart-btn" class="flex-1 ml-4 bg-red-600 text-white py-3 rounded-xl font-bold shadow-md">
+                        Adicionar R$ <span id="modal-total">0,00</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Carrinho Final -->
+    <div id="cart-modal-view" class="fixed inset-0 bg-black bg-opacity-50 z-[70] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl overflow-hidden max-h-[85vh] flex flex-col">
+            <div class="p-6 border-b flex justify-between items-center bg-red-600 text-white">
+                <h3 class="text-xl font-bold">Seu Carrinho</h3>
+                <button onclick="toggleCartModal()"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            </div>
+            <div id="cart-items-list" class="flex-1 overflow-y-auto p-6 space-y-4">
+                <!-- Itens do carrinho -->
+            </div>
+            <div class="p-6 bg-gray-50 border-t space-y-4">
+                <div class="flex justify-between font-bold text-xl">
+                    <span>Total</span>
+                    <span id="final-total" class="text-red-600">R$ 0,00</span>
+                </div>
+                <button onclick="sendToWhatsApp()" class="w-full bg-green-500 text-white py-4 rounded-2xl font-bold text-lg flex items-center justify-center shadow-lg hover:bg-green-600 transition">
+                    <i class="fa-brands fa-whatsapp text-2xl mr-2"></i> Finalizar no WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script>
+        const WHATSAPP_NUMBER = "5574974008239";
+        const APP_NAME = "DELÍCIA DE BOM";
+
+        // Banco de Dados Local
+        // TROQUE AS IMAGENS AQUI (UNSPLASH SÃO LIVRES DE DIREITOS)
+        const products = [
+            // HAMBURGUERES
+            {
+                id: 1,
+                category: 'hamburgueres',
+                name: 'Bacon franco bb',
+                desc: 'Hambúrguer de frango suculento, preparado com temperos especiais, pão brioche, alface, tomate e maionese artesanal.',
+                price: 24.90,
+                image: 'https://images.unsplash.com/photo-1513185158878-8d8c1827003f?auto=format&fit=crop&w=400&q=80',
+                adds: [{ name: 'Bacon', price: 4 }, { name: 'Ovo', price: 3 }, { name: 'Queijo extra', price: 3 }]
+            },
+            {
+                id: 2,
+                category: 'hamburgueres',
+                name: 'Cheese Bacon',
+                desc: 'Hambúrguer artesanal 180g, pão brioche, cheddar duplo, bacon crocante e molho especial.',
+                price: 29.90,
+                image: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=400&q=80',
+                adds: [{ name: 'Cebola caramelizada', price: 3 }, { name: 'Picles', price: 2 }, { name: 'Queijo extra', price: 3 }]
+            },
+            {
+                id: 3,
+                category: 'hamburgueres',
+                name: 'BBQ Burger',
+                desc: 'Hambúrguer 180g, pão australiano, queijo prato, bacon, onion rings e molho barbecue.',
+                price: 32.90,
+                image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80',
+                adds: [{ name: 'Cheddar', price: 3 }, { name: 'Bacon extra', price: 4 }]
+            },
+            {
+                id: 4,
+                category: 'hamburgueres',
+                name: 'Burger Chicken Crispy',
+                desc: 'Filé de frango empanado crocante, pão brioche, alface, tomate e maionese especial.',
+                price: 26.90,
+                image: 'https://images.unsplash.com/photo-1615239060474-51759550b071?auto=format&fit=crop&w=400&q=80',
+                adds: [{ name: 'Queijo', price: 3 }, { name: 'Bacon', price: 4 }]
+            },
+            {
+                id: 5,
+                category: 'hamburgueres',
+                name: 'Veggie Burger',
+                desc: 'Hambúrguer vegetal, pão integral, alface, tomate, cebola roxa e molho vegano.',
+                price: 27.90,
+                image: 'https://images.unsplash.com/photo-1525059696034-4967a8e1dca2?auto=format&fit=crop&w=400&q=80',
+                adds: [{ name: 'Queijo vegano', price: 4 }, { name: 'Cogumelos', price: 4 }]
+            },
+            // COMBOS
+            {
+                id: 6,
+                category: 'combos',
+                name: 'Combo Classic',
+                desc: 'Classic Burger + Batata frita média + Refrigerante lata.',
+                price: 34.90,
+                image: 'https://images.unsplash.com/photo-1534790561517-40e9017f475c?auto=format&fit=crop&w=400&q=80',
+                adds: []
+            },
+            {
+                id: 7,
+                category: 'combos',
+                name: 'Combo Cheese Bacon',
+                desc: 'Cheese Bacon + Batata frita média + Refrigerante lata.',
+                price: 39.90,
+                image: 'https://images.unsplash.com/photo-1514327605112-b887c0e61c0a?auto=format&fit=crop&w=400&q=80',
+                adds: []
+            },
+            // BEBIDAS
+            {
+                id: 8,
+                category: 'bebidas',
+                name: 'Refrigerante Lata 350ml',
+                desc: 'Coca-Cola, Zero, Guaraná, Fanta',
+                price: 6.00,
+                image: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?auto=format&fit=crop&w=400&q=80',
+                adds: []
+            },
+            {
+                id: 9,
+                category: 'bebidas',
+                name: 'Milk-shake 400ml',
+                desc: 'Chocolate, Morango ou Baunilha',
+                price: 14.90,
+                image: 'https://images.unsplash.com/photo-1579954115545-a95591f28be0?auto=format&fit=crop&w=400&q=80',
+                adds: []
+            }
+        ];
+
+        let cart = [];
+        let currentItem = null;
+        let selectedAdds = [];
+        let quantity = 1;
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            initSwiper();
+        });
+
+        function initSwiper() {
+            new Swiper('.swiper-container', {
+                loop: true,
+                autoplay: { delay: 3500 },
+                pagination: { el: '.swiper-pagination' },
+            });
+        }
+
+        function renderProducts() {
+            products.forEach(p => {
+                const html = `
+                    <div class="product-card flex bg-white rounded-2xl p-3 shadow-sm border border-gray-100 items-center" onclick="openItemModal(${p.id})">
+                        <div class="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
+                            <img src="${p.image}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h4 class="font-bold text-gray-800">${p.name}</h4>
+                            <p class="text-xs text-gray-500 line-clamp-2 mt-1">${p.desc}</p>
+                            <span class="text-red-600 font-bold mt-2 inline-block">R$ ${p.price.toFixed(2).replace('.', ',')}</span>
+                        </div>
+                        <div class="bg-red-50 text-red-600 p-2 rounded-lg">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                    </div>
+                `;
+                document.getElementById(`list-${p.category}`).innerHTML += html;
+            });
+        }
+
+        function openItemModal(id) {
+            currentItem = products.find(p => p.id === id);
+            selectedAdds = [];
+            quantity = 1;
+
+            document.getElementById('modal-img').src = currentItem.image;
+            document.getElementById('modal-title').innerText = currentItem.name;
+            document.getElementById('modal-desc').innerText = currentItem.desc;
+            document.getElementById('modal-qty').innerText = quantity;
+
+            // Adicionais
+            const addsEl = document.getElementById('modal-additionals');
+            addsEl.innerHTML = '';
+            
+            if(currentItem.adds.length > 0) {
+                document.getElementById('additional-section').classList.remove('hidden');
+                currentItem.adds.forEach((add, idx) => {
+                    addsEl.innerHTML += `
+                        <label class="flex justify-between items-center p-3 rounded-xl border border-gray-100 bg-gray-50 active:bg-red-50 cursor-pointer">
+                            <div class="flex items-center">
+                                <input type="checkbox" onchange="toggleAdd('${add.name}', ${add.price})" class="w-5 h-5 accent-red-600 mr-3">
+                                <span class="text-sm font-medium">${add.name}</span>
+                            </div>
+                            <span class="text-xs text-green-600 font-bold">+ R$ ${add.price.toFixed(2)}</span>
+                        </label>
+                    `;
+                });
+            } else {
+                document.getElementById('additional-section').classList.add('hidden');
+            }
+
+            updateModalPrice();
+            document.getElementById('item-modal').classList.remove('hidden');
+        }
+
+        function closeItemModal() {
+            document.getElementById('item-modal').classList.add('hidden');
+        }
+
+        function toggleAdd(name, price) {
+            const index = selectedAdds.findIndex(a => a.name === name);
+            if (index > -1) {
+                selectedAdds.splice(index, 1);
+            } else {
+                selectedAdds.push({ name, price });
+            }
+            updateModalPrice();
+        }
+
+        function updateQty(val) {
+            quantity = Math.max(1, quantity + val);
+            document.getElementById('modal-qty').innerText = quantity;
+            updateModalPrice();
+        }
+
+        function updateModalPrice() {
+            const addTotal = selectedAdds.reduce((acc, curr) => acc + curr.price, 0);
+            const total = (currentItem.price + addTotal) * quantity;
+            document.getElementById('modal-total').innerText = total.toFixed(2).replace('.', ',');
+            
+            document.getElementById('add-to-cart-btn').onclick = () => {
+                addToCart(currentItem, quantity, selectedAdds, total);
+            };
+        }
+
+        function addToCart(product, qty, adds, total) {
+            cart.push({
+                productName: product.name,
+                unitPrice: product.price,
+                qty: qty,
+                adds: [...adds],
+                subtotal: total
+            });
+            updateCartUI();
+            closeItemModal();
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((acc, curr) => acc + curr.qty, 0);
+            const total = cart.reduce((acc, curr) => acc + curr.subtotal, 0);
+
+            if (count > 0) {
+                document.getElementById('cart-bar').classList.remove('hidden');
+                document.getElementById('cart-count').innerText = `${count} ${count > 1 ? 'itens' : 'item'}`;
+                document.getElementById('cart-total').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            } else {
+                document.getElementById('cart-bar').classList.add('hidden');
+            }
+        }
+
+        function toggleCartModal() {
+            const modal = document.getElementById('cart-modal-view');
+            modal.classList.toggle('hidden');
+            
+            if(!modal.classList.contains('hidden')) {
+                renderCartItems();
+            }
+        }
+
+        function renderCartItems() {
+            const list = document.getElementById('cart-items-list');
+            const totalEl = document.getElementById('final-total');
+            list.innerHTML = '';
+            
+            let totalGeral = 0;
+
+            cart.forEach((item, index) => {
+                totalGeral += item.subtotal;
+                const addsText = item.adds.length > 0 
+                    ? `<p class="text-[10px] text-gray-400">+ ${item.adds.map(a => a.name).join(', ')}</p>` 
+                    : '';
+
+                list.innerHTML += `
+                    <div class="flex justify-between items-start border-b pb-3 border-gray-100">
+                        <div class="flex-1">
+                            <h5 class="font-bold text-gray-800">${item.qty}x ${item.productName}</h5>
+                            ${addsText}
+                            <span class="text-sm font-semibold text-red-600">R$ ${item.subtotal.toFixed(2).replace('.', ',')}</span>
+                        </div>
+                        <button onclick="removeFromCart(${index})" class="text-gray-300 hover:text-red-500">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+            });
+
+            totalEl.innerText = `R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCartItems();
+            updateCartUI();
+            if(cart.length === 0) toggleCartModal();
+        }
+
+        function sendToWhatsApp() {
+            let msg = `*🍔 NOVO PEDIDO - ${APP_NAME}*\n`;
+            msg += `-------------------------------\n\n`;
+            
+            let totalGeral = 0;
+            cart.forEach(item => {
+                totalGeral += item.subtotal;
+                msg += `*${item.qty}x ${item.productName}*\n`;
+                if(item.adds.length > 0) {
+                    msg += `   _Adicionais: ${item.adds.map(a => a.name).join(', ')}_\n`;
+                }
+                msg += `   Subtotal: R$ ${item.subtotal.toFixed(2)}\n\n`;
+            });
+
+            msg += `-------------------------------\n`;
+            msg += `*TOTAL DO PEDIDO: R$ ${totalGeral.toFixed(2)}*\n\n`;
+            msg += `_Por favor, informe seu endereço de entrega após esta mensagem._`;
+
+            const encodedMsg = encodeURIComponent(msg);
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMsg}`, '_blank');
+        }
+
+        function scrollToCategory(id) {
+            const el = document.getElementById(id);
+            const offset = 140; 
+            const bodyRect = document.body.getBoundingClientRect().top;
+            const elementRect = el.getBoundingClientRect().top;
+            const elementPosition = elementRect - bodyRect;
+            const offsetPosition = elementPosition - offset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+
+            // Update pills
+            document.querySelectorAll('.category-pill').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText.toLowerCase().includes(id.substring(0,3))) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
